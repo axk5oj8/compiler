@@ -13,6 +13,8 @@ type Reader interface {
 	Where() int
 
 	GoTo(int)
+
+	Dump()
 }
 
 func NewReader(tokens []Token) Reader {
@@ -60,7 +62,7 @@ func (r *reader) GoTo(i int) {
 }
 
 func (r *reader) Dump() {
-	fmt.Println("text\ttype")
+	fmt.Println("text\t\ttype")
 
 	var t Token
 
@@ -68,7 +70,6 @@ func (r *reader) Dump() {
 		if t = r.Read(); t == nil {
 			return
 		}
-
 		fmt.Printf("%s\t\t%s\n", t, t.Type())
 	}
 }

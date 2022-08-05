@@ -2,12 +2,19 @@ package lexer
 
 import (
 	"errors"
-	"github.com/axk5oj8/compiler/internal/token"
 	"strings"
+
+	"github.com/axk5oj8/compiler/internal/token"
 )
 
+func NewLexer(code string) Lexer {
+	return &lexer{
+		buffer: []byte(code),
+	}
+}
+
 type Lexer interface {
-	Tokenize(code string) ([]token.Token, error)
+	Tokenize() (token.Reader, error)
 }
 
 type lexer struct {
@@ -18,9 +25,7 @@ type lexer struct {
 	state DFAState
 }
 
-func (l *lexer) Tokenize(code string) ([]token.Token, error) {
-	l.buffer = []byte(code)
-
+func (l *lexer) Tokenize() (token.Reader, error) {
 	for {
 		tk, err := l.read()
 		if tk != nil {
@@ -28,19 +33,23 @@ func (l *lexer) Tokenize(code string) ([]token.Token, error) {
 			l.state = Initial
 		}
 
-		if errors.Is(err, ErrBlankChar) {
-			l.pos++
+		if err == nil {
+			continue
 		}
 
-		if errors.Is(err, ErrForbiddenChar) {
-			return l.tokens, err
+		if errors.Is(err, ErrBlankChar) {
+			l.pos++
+			continue
+		}
+
+		if errors.Is(err, ErrForbiddenChar) || (tk == nil && errors.Is(err, ErrInvalidChar)) {
+			return nil, err
 		}
 
 		if errors.Is(err, ErrEOF) {
-			break
+			return token.NewReader(l.tokens), nil
 		}
 	}
-	return l.tokens, nil
 }
 
 func (l *lexer) read() (token.Token, error) {
@@ -49,20 +58,25 @@ func (l *lexer) read() (token.Token, error) {
 	}
 
 	var err error
+	var ns DFAState
 	var sb strings.Builder
 
 	for l.pos < len(l.buffer) {
 		b := l.buffer[l.pos]
-		newState, err := l.state.take(b)
+		ns, err = l.state.take(b)
 		if err != nil {
 			break
 		}
 
 		sb.WriteByte(b)
 
-		l.state = newState
+		l.state = ns
 		l.pos++
 	}
 
-	return token.NewToken(l.state, sb.String()), err
+	if ttype, ok := typeMap[l.state]; ok {
+		return token.NewToken(ttype, sb.String()), err
+	}
+
+	return nil, err
 }
