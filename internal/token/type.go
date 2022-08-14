@@ -3,7 +3,7 @@ package token
 const (
 	Plus       Type = iota // +
 	Minus                  // -
-	Star                   // *
+	Asterisk               // *
 	Slash                  // /
 	GE                     // >=
 	GT                     // >
@@ -30,8 +30,8 @@ func (t Type) String() string {
 		return "Plus"
 	case Minus:
 		return "Minus"
-	case Star:
-		return "Star"
+	case Asterisk:
+		return "Asterisk"
 	case Slash:
 		return "Slash"
 	case GE:

@@ -20,7 +20,7 @@ const (
 	EQ
 	Plus
 	Minus
-	Star
+	Asterisk
 	Slash
 	Assignment
 	LeftParen
@@ -35,7 +35,7 @@ var (
 	typeMap = map[DFAState]token.Type{
 		Plus:       token.Plus,
 		Minus:      token.Minus,
-		Star:       token.Star,
+		Asterisk:   token.Asterisk,
 		Slash:      token.Slash,
 		GE:         token.GE,
 		GT:         token.GT,
@@ -75,7 +75,7 @@ var (
 		EQ:         fromEQ,
 		Plus:       fromPlus,
 		Minus:      fromMinus,
-		Star:       fromStar,
+		Asterisk:   fromAsterisk,
 		Slash:      fromSlash,
 		Assignment: fromAssignment,
 		LeftParen:  fromLeftParen,
@@ -120,7 +120,7 @@ func fromInitial(b byte) DFAState {
 	case b == '-':
 		return Minus
 	case b == '*':
-		return Star
+		return Asterisk
 	case b == '/':
 		return Slash
 	case b == '=':
@@ -229,7 +229,7 @@ func fromPlus(b byte) DFAState {
 func fromMinus(b byte) DFAState {
 	return Undefined
 }
-func fromStar(b byte) DFAState {
+func fromAsterisk(b byte) DFAState {
 	return Undefined
 }
 func fromSlash(b byte) DFAState {

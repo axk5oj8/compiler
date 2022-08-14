@@ -8,6 +8,9 @@ type Reader interface {
 	// Peek will return next Token from token stream, but not take. Nil if stream is empty.
 	Peek() Token
 
+	// PeekType peek first token & check it's type
+	PeekType(Type) bool
+
 	UnRead()
 
 	Where() int
@@ -45,6 +48,11 @@ func (r *reader) Peek() Token {
 	return r.tokens[r.pos]
 }
 
+func (r *reader) PeekType(typ Type) bool {
+	p := r.Peek()
+	return p != nil && p.Type() == typ
+}
+
 func (r *reader) UnRead() {
 	if r.pos > 0 {
 		r.pos--
@@ -70,6 +78,6 @@ func (r *reader) Dump() {
 		if t = r.Read(); t == nil {
 			return
 		}
-		fmt.Printf("%s\t\t%s\n", t, t.Type())
+		fmt.Printf("%s\t\t%s\n", t.Text(), t.Type())
 	}
 }

@@ -2,7 +2,7 @@ package token
 
 type Token interface {
 	Type() Type
-	String() string
+	Text() string
 }
 
 func NewToken(typ Type, txt string) Token {
@@ -18,6 +18,6 @@ func (t *token) Type() Type {
 	return t.typ
 }
 
-func (t *token) String() string {
+func (t *token) Text() string {
 	return t.txt
 }
